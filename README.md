@@ -84,3 +84,5 @@ Customers can request cancellation before shipment, or request a return/exchange
 - Order status can only move forward and only after payment succeeds.
 - Covers: if a book has an image URL (admin form) that is used. Otherwise the browser looks the cover up on Open Library (needs internet; results are cached in localStorage) and falls back to a generated CSS cover if none is found.
 - Set `SECRET_KEY` as an environment variable for anything beyond a demo.
+# booknest
+An online bookstore web application built using Flask, SQLite, HTML, CSS, and JavaScript.
