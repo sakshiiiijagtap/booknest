@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import back_button %}
+{% block title %}Payment{% endblock %}
+{% block content %}
+{{ back_button('Back to Orders', url_for('orders.my_orders')) }}
+<h1>Payment for order {{ order.display_id }}</h1>
+<div class="alert warn"><strong>SIMULATED PAYMENT.</strong> This is a demo. No real money is charged and no card details are collected.</div>
+<div class="two-col">
+  <section class="panel">
+    <h2>Choose a simulated result</h2>
+    {% if order.payment_status == 'FAILED' %}
+      <div class="alert error">Your previous payment attempt failed. You can retry below.</div>
+    {% endif %}
+    <p>Amount to pay: <strong class="price">{{ order.total_amount|inr }}</strong></p>
+    <div id="pay-error" class="alert error" style="display:none"></div>
+    <div class="actions vertical">
+      <button class="btn success" id="pay-success" data-order="{{ order.id }}">Simulate Successful Payment</button>
+      <button class="btn danger" id="pay-fail" data-order="{{ order.id }}">Simulate Failed Payment</button>
+    </div>
+    {% if order.payments %}
+      <h3>Payment attempts</h3>
+      {% for p in order.payments %}
+        <div class="line"><span>{{ p.transaction_id }}</span><span>{{ p.payment_status }}</span></div>
+      {% endfor %}
+    {% endif %}
+  </section>
+  <aside class="panel">
+    <h2>Order summary</h2>
+    {% for i in order.items %}
+      <div class="line"><span>{{ i.book.title }} &times; {{ i.quantity }}</span><span>{{ (i.price * i.quantity)|inr }}</span></div>
+    {% endfor %}
+    <div class="line total"><span>Total</span><strong>{{ order.total_amount|inr }}</strong></div>
+    <h3>Delivering to</h3>
+    <p class="pre">{{ order.delivery_address }}</p>
+  </aside>
+</div>
+{% endblock %}

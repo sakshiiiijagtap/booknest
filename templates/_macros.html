@@ -1,0 +1,53 @@
+{% macro cover(book, cls='') %}
+  {% if book.image_url %}
+    <img class="cover-img {{ cls }}" src="{{ book.image_url }}" alt="Cover of {{ book.title }}">
+  {% else %}
+    <div class="cover auto-cover c{{ book.id % 6 }} {{ cls }}" data-title="{{ book.title }}" data-author="{{ book.author }}">
+      <span class="cover-title">{{ book.title }}</span>
+      <span class="cover-author">{{ book.author }}</span>
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro stock_badge(book) %}
+  {% if book.stock == 0 %}<span class="badge out">Out of stock</span>
+  {% elif book.stock <= 5 %}<span class="badge low">Only {{ book.stock }} left</span>
+  {% else %}<span class="badge in">In stock ({{ book.stock }})</span>{% endif %}
+{% endmacro %}
+
+{% macro book_card(book) %}
+  <div class="card">
+    <a class="card-cover-wrap" href="{{ url_for('books.details', book_id=book.id) }}">
+      {{ cover(book) }}
+    </a>
+    <div class="card-body">
+      <p class="card-category">{{ book.category }}</p>
+      <h3 class="card-title"><a href="{{ url_for('books.details', book_id=book.id) }}">{{ book.title }}</a></h3>
+      <p class="muted card-author">{{ book.author }}</p>
+      <div class="card-foot">
+        <strong class="card-price">{{ book.price|inr }}</strong>
+        {% if book.stock > 0 %}
+          <button class="btn-card-add add-to-cart-quick" data-book-id="{{ book.id }}" title="Add to cart">+ Add</button>
+        {% else %}
+          <span class="badge out">Out of stock</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro tracker(order, statuses) %}
+  <ol class="tracker">
+    {% for s in statuses %}
+      <li class="{{ 'done' if loop.index0 <= order.status_index and (order.payment_status == 'SUCCESS' or order.payment_method == 'COD') else '' }}">{{ s }}</li>
+    {% endfor %}
+  </ol>
+{% endmacro %}
+
+{% macro back_button(label='Back', fallback_url=none) %}
+  {% set fallback = fallback_url or url_for('books.index') %}
+  <a class="back-link" href="{{ fallback }}" onclick="if (window.history.length > 1) { window.history.back(); return false; }">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <span>{{ label }}</span>
+  </a>
+{% endmacro %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<form class="panel auth" method="post">
+  <h1>Login</h1>
+  <label>Email<input type="email" name="email" required></label>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+    <label style="margin-top:0">Password</label>
+    <a href="{{ url_for('auth.forgot_password') }}" style="font-size:0.88rem">Forgot password?</a>
+  </div>
+  <input type="password" name="password" required style="margin-top:4px">
+  <button class="btn" type="submit">Login</button>
+  <p class="muted">New here? <a href="{{ url_for('auth.register') }}">Create an account</a></p>
+  <p class="muted small-note">Demo customer: customer@booknest.com / Customer@123</p>
+</form>
+{% endblock %}

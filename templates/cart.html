@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import cover, back_button %}
+{% block title %}Cart{% endblock %}
+{% block content %}
+{{ back_button('Continue Shopping', url_for('books.catalogue')) }}
+<h1>Your cart</h1>
+{% if items %}
+<div class="table-wrap"><table>
+  <tr><th>Book</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th></th></tr>
+  {% for i in items %}
+  <tr>
+    <td><a href="{{ url_for('books.details', book_id=i.book.id) }}"><strong>{{ i.book.title }}</strong></a><br>
+        <span class="muted">{{ i.book.author }} &middot; {{ i.book.stock }} in stock</span></td>
+    <td>{{ i.book.price|inr }}</td>
+    <td>
+      <div class="qty">
+        <button class="cart-qty" data-item="{{ i.id }}" data-qty="{{ i.quantity - 1 }}" {{ 'disabled' if i.quantity <= 1 }}>-</button>
+        <span>{{ i.quantity }}</span>
+        <button class="cart-qty" data-item="{{ i.id }}" data-qty="{{ i.quantity + 1 }}">+</button>
+      </div>
+    </td>
+    <td>{{ (i.book.price * i.quantity)|inr }}</td>
+    <td><button class="link-danger cart-remove" data-item="{{ i.id }}">Remove</button></td>
+  </tr>
+  {% endfor %}
+</table></div>
+<div class="summary-bar"><span>Total</span><strong>{{ total|inr }}</strong></div>
+<div class="actions"><a class="btn ghost" href="{{ url_for('books.catalogue') }}">Continue shopping</a>
+  <a class="btn" href="{{ url_for('orders.checkout') }}">Proceed to Checkout</a></div>
+{% else %}
+<div class="empty"><p>Your cart is empty.</p><a class="btn" href="{{ url_for('books.catalogue') }}">Browse books</a></div>
+{% endif %}
+{% endblock %}

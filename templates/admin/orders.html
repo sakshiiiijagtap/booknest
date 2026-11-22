@@ -1,0 +1,40 @@
+{% extends 'admin/base.html' %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<h1>Customer orders</h1>
+<div class="table-wrap"><table>
+  <tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment method</th><th>Payment status</th><th>Order status</th><th>Customer requests</th><th>Update</th></tr>
+  {% for o in orders %}
+  <tr>
+    <td>{{ o.display_id }}<br><span class="muted">{{ o.order_date.strftime('%d %b %Y') }}</span></td>
+    <td>{{ o.user.name }}<br><span class="muted">{{ o.user.email }}</span></td>
+    <td>{% for i in o.items %}{{ i.book.title }} &times; {{ i.quantity }}<br>{% endfor %}</td>
+    <td>{{ o.total_amount|inr }}</td>
+    <td>{{ 'Cash on delivery' if o.payment_method == 'COD' else 'Online (simulated)' }}</td>
+    <td><span class="badge {{ 'in' if o.payment_status == 'SUCCESS' else ('out' if o.payment_status == 'FAILED' else 'low') }}">{{ o.payment_status }}</span></td>
+    <td id="status-{{ o.id }}">{{ o.order_status }}</td>
+    <td>
+      {% for req in o.requests %}
+        <div><strong>{{ req.request_type|title }}</strong>: {{ req.status|title }}
+          <br><span class="muted">{{ req.requested_at.strftime('%d %b %Y, %I:%M %p') }}</span>
+          {% if req.status == 'PENDING' %}
+            <div class="actions">
+              <button class="btn small success request-resolve" data-request="{{ req.id }}" data-decision="approve">Approve</button>
+              <button class="btn small danger request-resolve" data-request="{{ req.id }}" data-decision="reject">Reject</button>
+            </div>
+          {% endif %}
+        </div>
+      {% else %}<span class="muted">None</span>{% endfor %}
+    </td>
+    <td>
+      {% if o.order_status != 'CANCELLED' and (o.payment_status == 'SUCCESS' or o.payment_method == 'COD') and o.status_index < 3 %}
+        <select id="newstatus-{{ o.id }}">
+          {% for s in statuses %}{% if loop.index0 > o.status_index %}<option value="{{ s }}">{{ s }}</option>{% endif %}{% endfor %}
+        </select>
+        <button class="btn small status-save" data-order="{{ o.id }}">Save</button>
+      {% else %}<span class="muted">{{ 'Cancelled' if o.order_status == 'CANCELLED' else ('Completed' if o.status_index == 3 else 'Not paid') }}</span>{% endif %}
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="9" class="muted">No orders yet.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

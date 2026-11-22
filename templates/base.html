@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}BookNest{% endblock %} | BookNest</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=v3">
+</head>
+<body>
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="logo" href="{{ url_for('books.index') }}">Book<span>Nest</span></a>
+    <nav class="nav-links">
+      <a href="{{ url_for('books.index') }}" class="{{ 'active' if request.endpoint == 'books.index' else '' }}">Home</a>
+      <a href="{{ url_for('books.catalogue') }}" class="{{ 'active' if request.endpoint == 'books.catalogue' else '' }}">Books</a>
+      {% if current_user %}
+        <a href="{{ url_for('orders.my_orders') }}" class="{{ 'active' if request.endpoint == 'orders.my_orders' else '' }}">My Orders</a>
+        <a href="{{ url_for('cart.view_cart') }}" class="cart-nav-link {{ 'active' if request.endpoint == 'cart.view_cart' else '' }}">Cart <span class="pill" id="cart-count">{{ cart_count }}</span></a>
+        {% if current_user.role == 'admin' %}<a href="{{ url_for('admin.dashboard') }}">Admin</a>{% endif %}
+        <a class="btn-nav-logout" href="{{ url_for('auth.logout') }}">Logout ({{ current_user.name.split()[0] }})</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}">Login</a>
+        <a class="btn small" href="{{ url_for('auth.register') }}">Sign up</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}<div class="alert {{ category }}">{{ message }}</div>{% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer"><div class="container"></div></footer>
+<div id="toast"></div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

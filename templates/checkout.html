@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import back_button %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+{{ back_button('Back to Cart', url_for('cart.view_cart')) }}
+<h1>Checkout</h1>
+{% if items %}
+<div class="two-col">
+  <form id="checkout-form" class="panel" novalidate>
+    <h2>Delivery details</h2>
+    <label>Full name<input name="name" value="{{ current_user.name }}"></label><small class="err" data-for="name"></small>
+    <label>Email<input name="email" type="email" value="{{ current_user.email }}"></label><small class="err" data-for="email"></small>
+    <label>Phone number<input name="phone" inputmode="numeric" maxlength="10" placeholder="10-digit mobile"></label><small class="err" data-for="phone"></small>
+    <label>Delivery address<textarea name="address" rows="3"></textarea></label><small class="err" data-for="address"></small>
+    <div class="row">
+      <div><label>City<input name="city"></label><small class="err" data-for="city"></small></div>
+      <div><label>PIN code<input name="pin" inputmode="numeric" maxlength="6"></label><small class="err" data-for="pin"></small></div>
+    </div>
+    <h2>Payment method</h2>
+    <label><input type="radio" name="payment_method" value="ONLINE" checked> Online payment (simulated)</label>
+    <label><input type="radio" name="payment_method" value="COD"> Cash on delivery</label>
+    <small class="err" data-for="payment_method"></small>
+    <button class="btn" type="submit">Place order</button>
+  </form>
+  <aside class="panel">
+    <h2>Order summary</h2>
+    {% for i in items %}
+      <div class="line"><span>{{ i.book.title }} &times; {{ i.quantity }}</span><span>{{ (i.book.price * i.quantity)|inr }}</span></div>
+    {% endfor %}
+    <div class="line total"><span>Total</span><strong>{{ total|inr }}</strong></div>
+  </aside>
+</div>
+{% else %}
+<div class="empty"><p>Your cart is empty, so there is nothing to check out.</p><a class="btn" href="{{ url_for('books.catalogue') }}">Browse books</a></div>
+{% endif %}
+{% endblock %}

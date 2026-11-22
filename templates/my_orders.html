@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import tracker, back_button %}
+{% block title %}My Orders{% endblock %}
+{% block content %}
+{{ back_button('Back to Store', url_for('books.catalogue')) }}
+<h1>My orders</h1>
+{% for o in orders %}
+<section class="panel order">
+  <div class="order-head">
+    <div><strong>{{ o.display_id }}</strong> <span class="muted">{{ o.order_date.strftime('%d %b %Y, %I:%M %p') }}</span></div>
+    <div><span class="badge {{ 'in' if o.payment_status == 'SUCCESS' else ('out' if o.payment_status == 'FAILED' else 'low') }}">Payment: {{ o.payment_status }}</span>
+         <strong>{{ o.total_amount|inr }}</strong></div>
+  </div>
+  <p>Payment method: <strong>{{ 'Cash on delivery' if o.payment_method == 'COD' else 'Online (simulated)' }}</strong></p>
+  <p class="muted">{% for i in o.items %}{{ i.book.title }} &times; {{ i.quantity }}{{ ', ' if not loop.last }}{% endfor %}</p>
+  {% if o.order_status != 'CANCELLED' %}{{ tracker(o, statuses) }}{% endif %}
+  <p>Current status: <strong>{{ o.order_status if o.payment_status == 'SUCCESS' or o.payment_method == 'COD' or o.order_status == 'CANCELLED' else 'Awaiting payment' }}</strong>
+    {% if o.payment_status == 'SUCCESS' or o.payment_method == 'COD' or o.order_status == 'CANCELLED' %}
+      <a href="{{ url_for('orders.confirmation', order_id=o.id) }}">View details</a>
+    {% else %}
+      <a class="btn small" href="{{ url_for('payment.payment_page', order_id=o.id) }}">Pay now</a>
+    {% endif %}
+  </p>
+  {% for req in o.requests %}
+    <p> {{ req.request_type|title }} request: <strong>{{ req.status|title }}</strong>
+      <span class="muted">({{ req.requested_at.strftime('%d %b %Y') }})</span></p>
+  {% endfor %}
+  {% set has_open_request = o.requests|selectattr('status', 'in', ['PENDING', 'APPROVED'])|list|length > 0 %}
+  {% set can_cancel = o.order_status in ('PLACED', 'CONFIRMED') %}
+  {% set is_delivered = o.order_status == 'DELIVERED' %}
+  <div class="actions">
+    <button class="btn small danger order-request" data-order="{{ o.id }}" data-request="CANCEL"
+      {% if has_open_request or not can_cancel %}disabled{% endif %}>
+      {{ 'Request cancellation' if can_cancel else 'Cancellation unavailable' }}
+    </button>
+    <button class="btn small ghost order-request" data-order="{{ o.id }}" data-request="RETURN"
+      {% if has_open_request or not is_delivered %}disabled{% endif %}>Request return</button>
+    <button class="btn small ghost order-request" data-order="{{ o.id }}" data-request="EXCHANGE"
+      {% if has_open_request or not is_delivered %}disabled{% endif %}>Request exchange</button>
+  </div>
+  <p class="muted small-note">Cancellation is available before shipment. Return and exchange requests are available after delivery.</p>
+</section>
+{% else %}
+<div class="empty"><p>You have no orders yet.</p><a class="btn" href="{{ url_for('books.catalogue') }}">Start shopping</a></div>
+{% endfor %}
+{% endblock %}

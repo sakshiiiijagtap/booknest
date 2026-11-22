@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import book_card %}
+{% block title %}Books{% endblock %}
+{% block content %}
+<h1>Book catalogue</h1>
+<form class="filters" method="get">
+  <input type="search" name="q" placeholder="Search title or author" value="{{ q }}">
+  <select name="category">
+    <option value="">All categories</option>
+    {% for c in categories %}<option value="{{ c }}" {{ 'selected' if c == category }}>{{ c }}</option>{% endfor %}
+  </select>
+  <select name="sort">
+    <option value="">Sort: Title A-Z</option>
+    <option value="price_asc" {{ 'selected' if sort == 'price_asc' }}>Price: Low to High</option>
+    <option value="price_desc" {{ 'selected' if sort == 'price_desc' }}>Price: High to Low</option>
+  </select>
+  <button class="btn" type="submit">Apply</button>
+</form>
+<p class="muted">{{ books|length }} book(s) found</p>
+{% if books %}
+  <div class="grid">{% for b in books %}{{ book_card(b) }}{% endfor %}</div>
+{% else %}
+  <div class="empty"><p>No books match your search.</p></div>
+{% endif %}
+{% endblock %}

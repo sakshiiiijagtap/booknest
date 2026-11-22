@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import book_card %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero-showcase">
+  <div class="hero-left">
+    <p class="eyebrow">Your next great read</p>
+    <h1>Find a book that <em>feels like home.</em></h1>
+    <p class="hero-subtitle">Programming, computer science, AI, fiction and more. Delivered to your door.</p>
+    <form class="hero-search-box" action="{{ url_for('books.catalogue') }}" method="get">
+      <input type="search" name="q" placeholder="Search by title or author...">
+      <button class="btn hero-search-btn" type="submit">Search</button>
+    </form>
+  </div>
+  <div class="hero-right">
+    <div class="hero-stack">
+      <div class="hero-stack-card card-deepwork">
+        <span class="hero-card-cat">Self Development</span>
+        <h4 class="hero-card-title">Deep Work</h4>
+        <span class="hero-card-author">Cal Newport</span>
+      </div>
+      <div class="hero-stack-card card-leanstartup">
+        <span class="hero-card-cat">Business</span>
+        <h4 class="hero-card-title">The Lean Startup</h4>
+        <span class="hero-card-author">Eric Ries</span>
+      </div>
+      <div class="hero-stack-card card-atomichabits">
+        <span class="hero-card-cat">Self Development</span>
+        <h4 class="hero-card-title">Atomic Habits</h4>
+        <span class="hero-card-author">James Clear</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-header">
+  <h2 class="section-title">Browse categories</h2>
+</div>
+<div class="category-pills">
+  {% for c in categories %}
+    <a class="category-pill" href="{{ url_for('books.catalogue', category=c) }}">
+      {% if c == 'Programming' %}<span class="pill-icon">&lt;/&gt;</span>
+      {% elif c == 'Computer Science' %}<span class="pill-icon">&#9638;</span>
+      {% elif c == 'Data Structures and Algorithms' %}<span class="pill-icon">&#x2442;</span>
+      {% elif c == 'Artificial Intelligence' %}<span class="pill-icon">&#10022;</span>
+      {% elif c == 'Fiction' %}<span class="pill-icon">&#128366;</span>
+      {% elif c == 'Self Development' %}<span class="pill-icon">&#10148;</span>
+      {% elif c == 'Business' %}<span class="pill-icon">&#128188;</span>
+      {% else %}<span class="pill-icon">&#9679;</span>{% endif %}
+      <span>{{ c }}</span>
+    </a>
+  {% endfor %}
+</div>
+
+<div class="section-header with-link">
+  <h2 class="section-title">Featured books</h2>
+  <a class="view-all-link" href="{{ url_for('books.catalogue') }}">View all &rarr;</a>
+</div>
+<div class="grid">{% for b in featured %}{{ book_card(b) }}{% endfor %}</div>
+
+<div class="section-header with-link" style="margin-top: 48px;">
+  <h2 class="section-title">Popular books</h2>
+  <a class="view-all-link" href="{{ url_for('books.catalogue') }}">View all &rarr;</a>
+</div>
+<div class="grid">{% for b in popular %}{{ book_card(b) }}{% endfor %}</div>
+{% endblock %}

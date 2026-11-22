@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<form class="panel auth" method="post">
+  <h1>Create account</h1>
+  <label>Full name<input name="name" required></label>
+  <label>Email<input type="email" name="email" required></label>
+  <label>Password (min 6 characters)<input type="password" name="password" minlength="6" required></label>
+  <button class="btn" type="submit">Sign up</button>
+  <p class="muted">Already registered? <a href="{{ url_for('auth.login') }}">Login</a></p>
+</form>
+{% endblock %}

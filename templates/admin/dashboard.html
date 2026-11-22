@@ -1,0 +1,20 @@
+{% extends 'admin/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<div class="stats">
+  <div class="stat"><span>Books</span><strong>{{ stats.books }}</strong></div>
+  <div class="stat"><span>Orders</span><strong>{{ stats.orders }}</strong></div>
+  <a class="stat" href="{{ url_for('admin.users') }}" style="text-decoration:none;color:inherit;cursor:pointer"><span>Customers</span><strong>{{ stats.customers }}</strong><small class="muted" style="display:block;font-size:0.75rem;margin-top:4px">View all &rarr;</small></a>
+  <div class="stat"><span>Revenue (paid)</span><strong>{{ stats.revenue|inr }}</strong></div>
+  <div class="stat"><span>Low stock</span><strong>{{ stats.low_stock }}</strong></div>
+  <div class="stat"><span>Out of stock</span><strong>{{ stats.out_of_stock }}</strong></div>
+</div>
+<h2>Recent orders</h2>
+<div class="table-wrap"><table>
+  <tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th></tr>
+  {% for o in recent %}
+  <tr><td>{{ o.display_id }}</td><td>{{ o.user.name }}</td><td>{{ o.total_amount|inr }}</td><td>{{ o.payment_status }}</td><td>{{ o.order_status }}</td></tr>
+  {% else %}<tr><td colspan="5" class="muted">No orders yet.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

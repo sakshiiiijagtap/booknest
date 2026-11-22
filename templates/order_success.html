@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import tracker %}
+{% block title %}Order {{ order.display_id }}{% endblock %}
+{% block content %}
+{% if order.order_status == 'CANCELLED' %}
+  <div class="alert warn"><strong>This order has been cancelled.</strong></div>
+{% elif order.payment_status == 'SUCCESS' or order.payment_method == 'COD' %}
+  <div class="alert success"><strong>Thank you! Your order is confirmed.</strong></div>
+{% else %}
+  <div class="alert warn">This order is not paid yet. <a href="{{ url_for('payment.payment_page', order_id=order.id) }}">Complete payment</a></div>
+{% endif %}
+<h1>Order {{ order.display_id }}</h1>
+<div class="two-col">
+  <section class="panel">
+    <h2>Purchased books</h2>
+    {% for i in order.items %}
+      <div class="line"><span>{{ i.book.title }} &times; {{ i.quantity }}</span><span>{{ (i.price * i.quantity)|inr }}</span></div>
+    {% endfor %}
+    <div class="line total"><span>Total amount</span><strong>{{ order.total_amount|inr }}</strong></div>
+  </section>
+  <aside class="panel">
+    <p><strong>Order ID:</strong> {{ order.display_id }}</p>
+    <p><strong>Payment status:</strong> <span class="badge {{ 'in' if order.payment_status == 'SUCCESS' else ('low' if order.payment_status == 'PENDING' else 'out') }}">{{ order.payment_status }}</span></p>
+    <p><strong>Payment method:</strong> {{ 'Cash on delivery' if order.payment_method == 'COD' else 'Online (simulated)' }}</p>
+    <p><strong>Order status:</strong> {{ order.order_status }}</p>
+    {% if order.payments %}<p><strong>Transaction:</strong> {{ order.payments[-1].transaction_id }}</p>{% endif %}
+    {% for req in order.requests %}
+      <p><strong>{{ req.request_type|title }} request:</strong> {{ req.status|title }}</p>
+    {% endfor %}
+    <h3>Delivery information</h3>
+    <p class="pre">{{ order.delivery_address }}</p>
+  </aside>
+</div>
+{% if order.order_status != 'CANCELLED' %}{{ tracker(order, statuses) }}{% endif %}
+<div class="actions"><a class="btn ghost" href="{{ url_for('orders.my_orders') }}">View all orders</a>
+<a class="btn" href="{{ url_for('books.catalogue') }}">Continue shopping</a></div>
+{% endblock %}
